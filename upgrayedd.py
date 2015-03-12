@@ -5,6 +5,26 @@ import argparse
 import os
 
 
+class Step(object):
+    def __init__(self, cmd, label, upgrader, skip_fail="fail"):
+        self.upgrader = upgrader
+        self.cmd = cmd
+        self.label = label
+        self.skip_fail = skip_fail
+
+    def run(self):
+        if self.upgrader.status == "failed":
+            return
+        if self.upgrader.status == "skipped":
+            return
+        ret = subprocess.call(self.cmd)
+        if ret:
+            if self.skip_fail == "fail":
+                self.upgrader.fail(self.label)
+            else:
+                self.upgrader.skip()
+
+
 class Upgrader(object):
     def __init__(self, base, repo, branch, match, replace, message):
         self.base = base
@@ -34,56 +54,34 @@ class Upgrader(object):
 
     def upgrade(self):
         print("====== %s =======" % self.repo)
-        print("cd %s" % self.full_repo_path())
         os.chdir(self.full_repo_path())
-        ret = subprocess.call(["git", "checkout", "master"])
-        if ret:
-            self.fail("failed on git checkout")
-            return
-        ret = subprocess.call(["git", "pull"])
-        if ret:
-            self.fail("failed on git pull")
-            return
-        ret = subprocess.call(["grep", self.match, self.requirements_path()])
-        if ret:
-            self.skip()
-            print("##### skipping ######")
-            return
-        ret = subprocess.call(["git", "checkout", "-b", self.branch])
-        if ret:
-            self.fail("failed to create new branch")
-            return
-        ret = subprocess.call(
-            ["perl", "-pi", "-e", self.replace_pattern(),
-             self.requirements_path()])
-        if ret:
-            self.fail("search/replace failed")
-            return
-        ret = subprocess.call(["make"])
-        if ret:
-            self.fail("make failed")
-            return
-        ret = subprocess.call(
-            ["git", "commit", "-a", "-m", self.message])
-        if ret:
-            self.fail("commit failed")
-            return
-        ret = subprocess.call(
-            ["git", "push", "origin", self.branch])
-        if ret:
-            self.fail("git push failed")
-            return
-        ret = subprocess.call(
-            ["/home/anders/bin/hub",
-             "pull-request", "-m", self.message])
-        if ret:
-            self.fail("pull-request failed")
-            return
-        ret = subprocess.call(["git", "checkout", "master"])
-        if ret:
-            self.fail("couldn't reset to master")
-            return
-        self.status = "success"
+        steps = [
+            Step(["git", "checkout", "master"],
+                 "git checkout master", self),
+            Step(["git", "pull"],
+                 "git pull", self),
+            Step(["grep", self.match, self.requirements_path()],
+                 "grep", self, skip_fail="skip"),
+            Step(["git", "checkout", "-b", self.branch],
+                 "create new branch", self),
+            Step(["perl", "-pi", "-e", self.replace_pattern(),
+                  self.requirements_path()], "search/replace",
+                 self),
+            Step(["make"], "make", self),
+            Step(["git", "commit", "-a", "-m", self.message],
+                 "commit", self),
+            Step(["git", "push", "origin", self.branch],
+                 "push", self),
+            Step(["/home/anders/bin/hub",
+                  "pull-request", "-m", self.message],
+                 "pull request", self),
+            Step(["git", "checkout", "master"], "reset to master",
+                 self),
+            ]
+        for s in steps:
+            s.run()
+        if self.status != "failed" and self.status != "skipped":
+            self.status = "success"
         return
 
 
