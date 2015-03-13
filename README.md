@@ -49,7 +49,8 @@ This program is my latest version, to automate the automation.
       --branch=nose-1.3.4 \
       --match='nose==1.3.0' \
       --replace='nose==1.3.4' \
-      --message=':arrow_up: nose 1.3.4'
+      --message=':arrow_up: nose 1.3.4' \
+      --hub=~/bin/hub
 
 That will look at the `repos.txt` file which should be a list of all
 of your repos, one per line. It expects them to all be checked out in

@@ -44,12 +44,13 @@ class UBase(object):
 
 
 class Upgrader(UBase):
-    def __init__(self, base, repo, branch, match, replace, message):
+    def __init__(self, base, repo, branch, match, replace, message, hub):
         self.base = base
         self.repo = repo
         self.branch = branch
         self.match = match
         self.replace = replace
+        self.hub = hub
         self.message = message
         self.status = "running"
         self.log = ""
@@ -74,7 +75,7 @@ class Upgrader(UBase):
                  "commit", self),
             Step(["git", "push", "origin", self.branch],
                  "push", self),
-            Step(["/home/anders/bin/hub",
+            Step([self.hub,
                   "pull-request", "-m", self.message],
                  "pull request", self),
             Step(["git", "checkout", "master"], "reset to master",
@@ -130,7 +131,7 @@ def print_report(failed, skipped, succeeded):
     print("===============================================")
 
 
-def main(base, repos, branch, match, replace, message, uworld):
+def main(base, repos, branch, match, replace, message, uworld, hub):
     f = open(repos)
     failed = []
     skipped = []
@@ -141,7 +142,7 @@ def main(base, repos, branch, match, replace, message, uworld):
             u = Updater(base, r)
             u.upgrade()
         else:
-            u = Upgrader(base, r, branch, match, replace, message)
+            u = Upgrader(base, r, branch, match, replace, message, hub)
             u.upgrade()
         if u.status == "failed":
             failed.append((r, u.log))
@@ -161,6 +162,7 @@ if __name__ == "__main__":
     parser.add_argument('--replace', help='replacement')
     parser.add_argument('--message', help='commit and PR message')
     parser.add_argument('--uworld', help='just update everything')
+    parser.add_argument('--hub', help='path to hub', default='/usr/local/bin/hub')
     args = parser.parse_args()
     main(args.base, args.repos, args.branch, args.match,
-         args.replace, args.message, args.uworld)
+         args.replace, args.message, args.uworld, args.hub)
