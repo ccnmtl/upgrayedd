@@ -25,17 +25,7 @@ class Step(object):
                 self.upgrader.skip()
 
 
-class Upgrader(object):
-    def __init__(self, base, repo, branch, match, replace, message):
-        self.base = base
-        self.repo = repo
-        self.branch = branch
-        self.match = match
-        self.replace = replace
-        self.message = message
-        self.status = "running"
-        self.log = ""
-
+class UBase(object):
     def full_repo_path(self):
         return os.path.join(self.base, self.repo)
 
@@ -51,6 +41,18 @@ class Upgrader(object):
 
     def skip(self):
         self.status = "skipped"
+
+
+class Upgrader(UBase):
+    def __init__(self, base, repo, branch, match, replace, message):
+        self.base = base
+        self.repo = repo
+        self.branch = branch
+        self.match = match
+        self.replace = replace
+        self.message = message
+        self.status = "running"
+        self.log = ""
 
     def upgrade(self):
         print("====== %s =======" % self.repo)
@@ -85,6 +87,29 @@ class Upgrader(object):
         return
 
 
+class Updater(UBase):
+    def __init__(self, base, repo):
+        self.base = base
+        self.repo = repo
+        self.status = "running"
+        self.log = ""
+
+    def upgrade(self):
+        print("====== %s =======" % self.repo)
+        os.chdir(self.full_repo_path())
+        steps = [
+            Step(["git", "checkout", "master"],
+                 "git checkout master", self),
+            Step(["git", "pull"],
+                 "git pull", self),
+            ]
+        for s in steps:
+            s.run()
+        if self.status != "failed" and self.status != "skipped":
+            self.status = "success"
+        return
+
+
 def print_report(failed, skipped, succeeded):
     print("===============================================")
     print("failed: %d" % len(failed))
@@ -105,15 +130,19 @@ def print_report(failed, skipped, succeeded):
     print("===============================================")
 
 
-def main(base, repos, branch, match, replace, message):
+def main(base, repos, branch, match, replace, message, uworld):
     f = open(repos)
     failed = []
     skipped = []
     succeeded = []
     for line in f:
         r = line.strip()
-        u = Upgrader(base, r, branch, match, replace, message)
-        u.upgrade()
+        if uworld:
+            u = Updater(base, r)
+            u.upgrade()
+        else:
+            u = Upgrader(base, r, branch, match, replace, message)
+            u.upgrade()
         if u.status == "failed":
             failed.append((r, u.log))
         elif u.status == "skipped":
@@ -131,6 +160,7 @@ if __name__ == "__main__":
     parser.add_argument('--match', help='regexp to match in requirements.txt')
     parser.add_argument('--replace', help='replacement')
     parser.add_argument('--message', help='commit and PR message')
+    parser.add_argument('--uworld', help='just update everything')
     args = parser.parse_args()
     main(args.base, args.repos, args.branch, args.match,
-         args.replace, args.message)
+         args.replace, args.message, args.uworld)

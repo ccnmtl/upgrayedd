@@ -63,3 +63,11 @@ prints out a report summarizing which repositories it skipped (no
 match found in requirements.txt), which ones failed (and which step they
 failed on) so you can investigate, and which ones were successfully
 upgraded.
+
+There's also a simple, "update world" mode that just makes sure all
+checked out repos are up to date:
+
+    $ ./upgrayedd.py --repos=repos.txt \
+      --base=/home/anders/code/python \
+      --uworld=1
+
