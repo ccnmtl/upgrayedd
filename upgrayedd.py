@@ -110,6 +110,22 @@ class Updater(UBase):
             self.status = "success"
         return
 
+    def make(self):
+        print("====== %s =======" % self.repo)
+        os.chdir(self.full_repo_path())
+        steps = [
+            Step(["git", "checkout", "master"],
+                 "git checkout master", self),
+            Step(["git", "pull"],
+                 "git pull", self),
+            Step(["make"], "make", self),
+            ]
+        for s in steps:
+            s.run()
+        if self.status != "failed" and self.status != "skipped":
+            self.status = "success"
+        return
+
 
 def print_report(failed, skipped, succeeded):
     print("===============================================")
@@ -131,7 +147,7 @@ def print_report(failed, skipped, succeeded):
     print("===============================================")
 
 
-def main(base, repos, branch, match, replace, message, uworld, hub):
+def main(base, repos, branch, match, replace, message, uworld, mworld, hub):
     f = open(repos)
     failed = []
     skipped = []
@@ -141,6 +157,9 @@ def main(base, repos, branch, match, replace, message, uworld, hub):
         if uworld:
             u = Updater(base, r)
             u.upgrade()
+        elif mworld:
+            u = Updater(base, r)
+            u.make()
         else:
             u = Upgrader(base, r, branch, match, replace, message, hub)
             u.upgrade()
@@ -162,7 +181,8 @@ if __name__ == "__main__":
     parser.add_argument('--replace', help='replacement')
     parser.add_argument('--message', help='commit and PR message')
     parser.add_argument('--uworld', help='just update everything')
+    parser.add_argument('--mworld', help='make world')
     parser.add_argument('--hub', help='path to hub', default='/usr/local/bin/hub')
     args = parser.parse_args()
     main(args.base, args.repos, args.branch, args.match,
-         args.replace, args.message, args.uworld, args.hub)
+         args.replace, args.message, args.uworld, args.mworld, args.hub)
