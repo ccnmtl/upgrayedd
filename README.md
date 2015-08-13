@@ -2,6 +2,8 @@
 
 Upgrade all the apps.
 
+![upgrayedd](upgrayedd.jpg)
+
 ## Background
 
 I help maintain a lot of django applications (30+). They are all quite
