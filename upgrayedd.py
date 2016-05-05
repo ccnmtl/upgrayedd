@@ -55,12 +55,17 @@ class Upgrader(UBase):
         self.status = "running"
         self.log = ""
 
-    def upgrade(self):
+    def upgrade(self, reset=False):
         print("====== %s =======" % self.repo)
         os.chdir(self.full_repo_path())
         steps = [
             Step(["git", "checkout", "master"],
-                 "git checkout master", self),
+                 "git checkout master", self)]
+        if reset:
+            steps.append(
+                Step(["git", "reset", "--hard"], "git reset --hard",
+                     self))
+        steps.extend([
             Step(["git", "pull"],
                  "git pull", self),
             Step(["grep", self.match, self.requirements_path()],
@@ -80,7 +85,7 @@ class Upgrader(UBase):
                  "pull request", self),
             Step(["git", "checkout", "master"], "reset to master",
                  self),
-            ]
+            ])
         for s in steps:
             s.run()
         if self.status != "failed" and self.status != "skipped":
@@ -95,14 +100,24 @@ class Updater(UBase):
         self.status = "running"
         self.log = ""
 
-    def upgrade(self):
+    def upgrade(self, reset=False):
         print("====== %s =======" % self.repo)
         os.chdir(self.full_repo_path())
-        steps = [
-            Step(["git", "checkout", "master"],
-                 "git checkout master", self),
-            Step(["git", "pull"],
-                 "git pull", self),
+        if reset:
+            steps = [
+                Step(["git", "checkout", "master"],
+                     "git checkout master", self),
+                Step(["git", "reset", "--hard"], "git reset --hard",
+                     self),
+                Step(["git", "pull"],
+                     "git pull", self),
+            ]
+        else:
+            steps = [
+                Step(["git", "checkout", "master"],
+                     "git checkout master", self),
+                Step(["git", "pull"],
+                     "git pull", self),
             ]
         for s in steps:
             s.run()
@@ -110,16 +125,27 @@ class Updater(UBase):
             self.status = "success"
         return
 
-    def make(self):
+    def make(self, reset=False):
         print("====== %s =======" % self.repo)
         os.chdir(self.full_repo_path())
-        steps = [
-            Step(["git", "checkout", "master"],
-                 "git checkout master", self),
-            Step(["git", "pull"],
-                 "git pull", self),
-            Step(["make"], "make", self),
-            ]
+        if reset:
+            steps = [
+                Step(["git", "checkout", "master"],
+                     "git checkout master", self),
+                Step(["git", "reset", "--hard"],
+                     "git reset --hard", self),
+                Step(["git", "pull"],
+                     "git pull", self),
+                Step(["make"], "make", self),
+                ]
+        else:
+            steps = [
+                Step(["git", "checkout", "master"],
+                     "git checkout master", self),
+                Step(["git", "pull"],
+                     "git pull", self),
+                Step(["make"], "make", self),
+                ]
         for s in steps:
             s.run()
         if self.status != "failed" and self.status != "skipped":
@@ -147,7 +173,8 @@ def print_report(failed, skipped, succeeded):
     print("===============================================")
 
 
-def main(base, repos, branch, match, replace, message, uworld, mworld, hub):
+def main(base, repos, branch, match, replace, message, uworld, mworld, hub,
+         reset):
     f = open(repos)
     failed = []
     skipped = []
@@ -156,13 +183,13 @@ def main(base, repos, branch, match, replace, message, uworld, mworld, hub):
         r = line.strip()
         if uworld:
             u = Updater(base, r)
-            u.upgrade()
+            u.upgrade(reset=reset)
         elif mworld:
             u = Updater(base, r)
-            u.make()
+            u.make(reset=reset)
         else:
             u = Upgrader(base, r, branch, match, replace, message, hub)
-            u.upgrade()
+            u.upgrade(reset=reset)
         if u.status == "failed":
             failed.append((r, u.log))
         elif u.status == "skipped":
@@ -179,10 +206,13 @@ if __name__ == "__main__":
     parser.add_argument('--branch', help='git branch name')
     parser.add_argument('--match', help='regexp to match in requirements.txt')
     parser.add_argument('--replace', help='replacement')
+    parser.add_argument('--reset', help='do a reset --hard')
     parser.add_argument('--message', help='commit and PR message')
     parser.add_argument('--uworld', help='just update everything')
     parser.add_argument('--mworld', help='make world')
-    parser.add_argument('--hub', help='path to hub', default='/usr/local/bin/hub')
+    parser.add_argument('--hub', help='path to hub',
+                        default='/usr/local/bin/hub')
     args = parser.parse_args()
     main(args.base, args.repos, args.branch, args.match,
-         args.replace, args.message, args.uworld, args.mworld, args.hub)
+         args.replace, args.message, args.uworld, args.mworld, args.hub,
+         args.reset)
