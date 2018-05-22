@@ -74,3 +74,5 @@ checked out repos are up to date:
       --base=/home/anders/code/python \
       --uworld=1
 
+## Common Tasks
+
