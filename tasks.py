@@ -1,27 +1,6 @@
 import os
-import subprocess
 
-import requests
-
-
-class Step(object):
-    def __init__(self, cmd, label, upgrader, skip_fail='fail'):
-        self.upgrader = upgrader
-        self.cmd = cmd
-        self.label = label
-        self.skip_fail = skip_fail
-
-    def run(self):
-        if self.upgrader.status == 'failed':
-            return
-        if self.upgrader.status == 'skipped':
-            return
-        ret = subprocess.call(self.cmd)
-        if ret:
-            if self.skip_fail == 'fail':
-                self.upgrader.fail(self.label)
-            else:
-                self.upgrader.skip()
+from steps import Step, CommitStatusStep, PullRequestStep, MergeStep
 
 
 class Task(object):
@@ -33,7 +12,7 @@ class Task(object):
         return os.path.join(self.base, self.repo, 'requirements.txt')
 
     def package_json_path(self):
-        return os.path.join(self.base, self.repo, "package.json")
+        return os.path.join(self.base, self.repo, 'package.json')
 
     def replace_pattern(self):
         return 's/%s/%s/' % (self.match, self.replace)
@@ -87,7 +66,7 @@ class CheckoutTask(Task):
             Step(['git', 'checkout', self.branch],
                  'git checkout {}'.format(self.branch),
                  self),
-            Step(["git", "reset", "--hard"], "git reset --hard",
+            Step(['git', 'reset', '--hard'], 'git reset --hard',
                  self),
             Step(['git', 'pull'], 'git pull', self),
         ]
@@ -240,19 +219,20 @@ class RequirementsUpdateTask(Task):
         os.chdir(self.full_repo_path())
 
         steps = [
-            Step(["perl", "-pi", "-e", self.replace_pattern(),
-                 self.requirements_path()], "search/replace",
+            Step(['perl', '-pi', '-e', self.replace_pattern(),
+                 self.requirements_path()], 'search/replace',
                  self)
         ]
 
         for s in steps:
             s.run()
-        if self.status != "failed" and self.status != "skipped":
-            self.status = "success"
+        if self.status != 'failed' and self.status != 'skipped':
+            self.status = 'success'
         return
 
 
 class MergeMatchingPullRequestTask(Task):
+
     def __init__(self, base, repo, owner, pattern, api_token):
         self.base = base
         self.repo = repo
@@ -261,48 +241,22 @@ class MergeMatchingPullRequestTask(Task):
         self.status = 'running'
         self.headers = {'Authorization': 'token %s' % api_token}
         self.log = ''
+        self.git_base = 'https://api.github.com/repos'
 
     def make(self):
         print('====== %s =======' % self.repo)
         os.chdir(self.full_repo_path())
 
-        git_base = 'https://api.github.com/repos'
-
-        status_url = '{}/{}/{}/commits/{}/status'.format(
-            git_base, self.owner, self.repo, self.pattern)
-
-        response = requests.get(status_url, headers=self.headers)
-        if (response.status_code != 200 or
-                response.json()['state'] != 'success'):
-            self.status = 'skipped'
-            return
-
-        pullrequest_url = '{}/{}/{}/pulls'.format(
-            git_base, self.owner, self.repo)
-
-        response = requests.get(pullrequest_url, headers=self.headers)
-        if (response.status_code != 200):
-            self.status = 'skipped'
-            return
-
-        # find the matching pull request
-        steps = []
-        for pr in response.json():
-            if self.pattern == pr['head']['ref']:
-                steps.append(Step(['hub', 'merge', pr['html_url']],
-                                  'merge {}'.format(pr['html_url']), self))
-                steps.append(Step(['git', 'push', 'origin', 'master'],
-                                  'push to master', self))
-                break
-
-        if len(steps) < 1:
-            self.status = 'skipped'
-            return
+        steps = [
+            CommitStatusStep('commit status', self),
+            PullRequestStep('pull request info', self),
+            MergeStep('merge the pr', self),
+        ]
 
         for s in steps:
             s.run()
-        if self.status != "failed" and self.status != "skipped":
-            self.status = "success"
+        if self.status != 'failed' and self.status != 'skipped':
+            self.status = 'success'
 
 
 class TaskRunner(object):
