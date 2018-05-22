@@ -98,7 +98,6 @@ class MergeStep(object):
 
         response = requests.put(url, headers=self.upgrader.headers)
         if response.status_code != 200:
-            # no matching pull request
             if self.skip_fail == 'fail':
                 self.upgrader.fail(self.label)
             else:

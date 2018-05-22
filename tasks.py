@@ -250,7 +250,7 @@ class MergeMatchingPullRequestTask(Task):
         steps = [
             CommitStatusStep('commit status', self),
             PullRequestStep('pull request info', self),
-            MergeStep('merge the pr', self),
+            MergeStep('merge the pr', self)
         ]
 
         for s in steps:
