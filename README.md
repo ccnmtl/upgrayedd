@@ -73,4 +73,3 @@ checked out repos are up to date:
     $ ./upgrayedd.py --repos=repos.txt \
       --base=/home/anders/code/python \
       --uworld=1
-

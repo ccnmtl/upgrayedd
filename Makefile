@@ -26,4 +26,4 @@ $(PY_SENTINAL):
 	touch $@
 
 flake8: $(PY_SENTINAL)
-	$(FLAKE8) $(PY_DIRS) --exclude ve,virtualenv.py
+	$(FLAKE8) $(PY_DIRS) --exclude ve,virtualenv.py,sandbox
