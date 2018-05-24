@@ -73,3 +73,16 @@ checked out repos are up to date:
     $ ./upgrayedd.py --repos=repos.txt \
       --base=/home/anders/code/python \
       --uworld=1
+
+## Common Tasks
+
+In order to complete any of these tasks, first create a .txt file with your list of repositories.
+
+### Clone repos into a sandbox
+    ve/bin/python ./runner.py --base ./sandbox --repos ./django.txt --clone
+    
+### Checkout a branch
+    ve/bin/python ./runner.py --base ./sandbox --repos ./django.txt --checkout master
+
+### Merge a particular pull request
+    ve/bin/python ./runner.py --base ./sandbox --repos ./django.txt --owner ccnmtl --match <pr branch> --api_token <github oauth token>
