@@ -89,6 +89,7 @@ In order to complete any of these tasks, first create a .txt file with your list
     ve/bin/python ./runner.py --base ./sandbox --repos ./django.txt --checkout master
 
 #### Merge a particular pull request
+Unlike the other tasks, this does not operate directly on the local repositories. Instead, it uses the Github API to check on the status of a branch and issue a merge command if all checks are green.
     ve/bin/python ./runner.py --base ./sandbox --repos ./django.txt --owner ccnmtl --match <pr branch> --api_token <github oauth token>
 
 #### Make all the things
