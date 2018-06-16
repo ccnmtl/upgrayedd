@@ -86,3 +86,9 @@ In order to complete any of these tasks, first create a .txt file with your list
 
 ### Merge a particular pull request
     ve/bin/python ./runner.py --base ./sandbox --repos ./django.txt --owner ccnmtl --match <pr branch> --api_token <github oauth token>
+
+### Make all the things
+    ve/bin/python ./runner.py --base ./sandbox --repos ./django.txt --make
+
+### Commit changes
+   ve/bin/python ./runner.py --base ./sandbox --reports ./django.text --commit <pr branch> --message <commit message>
