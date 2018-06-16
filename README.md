@@ -74,21 +74,25 @@ checked out repos are up to date:
       --base=/home/anders/code/python \
       --uworld=1
 
-## Common Tasks
+## Runner
+
+To support ad hoc task needs, an additional `runner.py` script was added. Runner allows you to execute individual tasks across repositories like checking out a branch, then executing `make`. Runner also supports merging matching pull requests using the GitHub api. To use this feature, you'll need to generate a [personal access token](https://github.com/settings/tokens). 
+
+### Runner Tasks
 
 In order to complete any of these tasks, first create a .txt file with your list of repositories.
 
-### Clone repos into a sandbox
+#### Clone repos into a sandbox
     ve/bin/python ./runner.py --base ./sandbox --repos ./django.txt --clone
     
-### Checkout a branch
+#### Checkout a branch
     ve/bin/python ./runner.py --base ./sandbox --repos ./django.txt --checkout master
 
-### Merge a particular pull request
+#### Merge a particular pull request
     ve/bin/python ./runner.py --base ./sandbox --repos ./django.txt --owner ccnmtl --match <pr branch> --api_token <github oauth token>
 
-### Make all the things
+#### Make all the things
     ve/bin/python ./runner.py --base ./sandbox --repos ./django.txt --make
 
-### Commit changes
-    ve/bin/python ./runner.py --base <sandbox> --reports ./django.text --commit <pr branch> --message <commit message>
+#### Commit changes
+    ve/bin/python ./runner.py --base ./sandbox --reports ./django.txt --commit <pr branch> --message <commit message>
