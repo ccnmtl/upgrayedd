@@ -76,7 +76,7 @@ checked out repos are up to date:
 
 ## Runner
 
-To support ad hoc task needs, an additional `runner.py` script was added. Runner allows you to execute individual tasks across repositories like checking out a branch, then executing `make`. Runner also supports merging matching pull requests using the GitHub api. To use this feature, you'll need to generate a [personal access token](https://github.com/settings/tokens). 
+To support ad hoc task needs, an additional `runner.py` script was added. Runner allows you to execute individual tasks across repositories like checking out a branch, then executing `make`. 
 
 ### Runner Tasks
 
@@ -89,7 +89,7 @@ In order to complete any of these tasks, first create a .txt file with your list
     ve/bin/python ./runner.py --base ./sandbox --repos ./django.txt --checkout master
 
 #### Merge a particular pull request
-Unlike the other tasks, this does not operate directly on the local repositories. Instead, it uses the Github API to check on the status of a branch and issue a merge command if all checks are green.
+Unlike the other tasks, this does not operate directly on the local repositories. Instead, it uses the Github API to check on the status of a branch and issue a merge command if all checks are green. To use this feature, you'll need to generate a [personal access token](https://github.com/settings/tokens). *(@todo - the --base parameter can be removed from the required arguments.)*
     
     ve/bin/python ./runner.py --base ./sandbox --repos ./django.txt --owner ccnmtl --match <pr branch> --api_token <github oauth token>
 
