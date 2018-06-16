@@ -91,4 +91,4 @@ In order to complete any of these tasks, first create a .txt file with your list
     ve/bin/python ./runner.py --base ./sandbox --repos ./django.txt --make
 
 ### Commit changes
-   ve/bin/python ./runner.py --base ./sandbox --reports ./django.text --commit <pr branch> --message <commit message>
+    ve/bin/python ./runner.py --base <sandbox> --reports ./django.text --commit <pr branch> --message <commit message>
