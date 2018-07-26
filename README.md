@@ -76,7 +76,9 @@ checked out repos are up to date:
 
 ## Runner
 
-To support ad hoc task needs, an additional `runner.py` script was added. Runner allows you to execute individual tasks across repositories like checking out a branch, then executing `make`. 
+To support ad hoc task needs, an additional `runner.py` script was added. Runner allows you to execute individual tasks across repositories like checking out a branch, then executing `make`.
+
+Note that Python may require fully qualified paths to the files below. If the file is in the root directory you can prefix it with `$PWD/` to prepend the current working directory.  For example, `./django.txt` would become `$PWD/django.txt`.
 
 ### Runner Tasks
 
