@@ -4,7 +4,7 @@ configparser==3.7.4
 flake8==3.7.8
 pycodestyle==2.5.0
 pyflakes==2.1.1
-urllib3==1.22
+urllib3==1.25.3
 chardet==3.0.4
 certifi==2018.4.16
 cryptography==2.2.2
