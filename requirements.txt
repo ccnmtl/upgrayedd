@@ -10,5 +10,5 @@ certifi==2019.6.16
 cryptography==2.7
 pyOpenSSL==19.0.0
 asn1crypto==0.24.0  # for pyOpenSSL
-cffi==1.11.5  # for pyOpenSSL
+cffi==1.12.3  # for pyOpenSSL
 idna==2.6
