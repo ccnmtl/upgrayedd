@@ -7,7 +7,7 @@ pyflakes==2.1.1
 urllib3==1.25.3
 chardet==3.0.4
 certifi==2019.6.16
-cryptography==2.2.2
+cryptography==2.7
 pyOpenSSL==18.0.0
 asn1crypto==0.24.0  # for pyOpenSSL
 cffi==1.11.5  # for pyOpenSSL
