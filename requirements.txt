@@ -1,7 +1,7 @@
 requests==2.22.0
 enum34==1.1.6
 configparser==3.8.1
-typing==3.7.4; python_version < '3.5'
+typing==3.7.4.1; python_version < '3.5'
 functools32==3.2.3-2; python_version < '3'
 entrypoints==0.3  # for flake8
 flake8==3.7.8
