@@ -1,6 +1,6 @@
 requests==2.22.0
 enum34==1.1.6
-configparser==4.0.1
+configparser==4.0.2
 typing==3.7.4.1; python_version < '3.5'
 functools32==3.2.3-2; python_version < '3'
 entrypoints==0.3  # for flake8
@@ -15,3 +15,4 @@ pyOpenSSL==19.0.0
 asn1crypto==0.24.0  # for pyOpenSSL
 cffi==1.12.3  # for pyOpenSSL
 idna==2.8
+
