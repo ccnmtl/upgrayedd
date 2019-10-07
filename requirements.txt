@@ -12,7 +12,7 @@ chardet==3.0.4
 certifi==2019.9.11
 cryptography==2.7
 pyOpenSSL==19.0.0
-asn1crypto==1.0.0  # for pyOpenSSL
+asn1crypto==1.0.1  # for pyOpenSSL
 cffi==1.12.3  # for pyOpenSSL
 idna==2.8
 
