@@ -4,7 +4,7 @@ configparser==4.0.2
 typing==3.7.4.1; python_version < '3.5'
 functools32==3.2.3-2; python_version < '3'
 entrypoints==0.3  # for flake8
-flake8==3.7.8
+flake8==3.7.9
 pycodestyle==2.5.0
 pyflakes==2.1.1
 urllib3==1.25.6
