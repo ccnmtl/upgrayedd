@@ -9,7 +9,7 @@ pycodestyle==2.5.0
 pyflakes==2.1.1
 urllib3==1.25.7
 chardet==3.0.4
-certifi==2019.9.11
+certifi==2019.11.28
 cryptography==2.8
 pyOpenSSL==19.1.0
 asn1crypto==1.2.0  # for pyOpenSSL
