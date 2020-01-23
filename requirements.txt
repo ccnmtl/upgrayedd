@@ -7,7 +7,7 @@ entrypoints==0.3  # for flake8
 flake8==3.7.9
 pycodestyle==2.5.0
 pyflakes==2.1.1
-urllib3==1.25.7
+urllib3==1.25.8
 chardet==3.0.4
 certifi==2019.11.28
 cryptography==2.8
