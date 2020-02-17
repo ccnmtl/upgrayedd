@@ -14,5 +14,5 @@ cryptography==2.8
 pyOpenSSL==19.1.0
 asn1crypto==1.3.0  # for pyOpenSSL
 cffi==1.14.0  # for pyOpenSSL
-idna==2.8
+idna==2.9
 
