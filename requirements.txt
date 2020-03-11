@@ -1,5 +1,5 @@
 requests==2.23.0
-enum34==1.1.9
+enum34==1.1.10
 configparser==4.0.2
 typing==3.7.4.1; python_version < '3.5'
 functools32==3.2.3-2; python_version < '3'
